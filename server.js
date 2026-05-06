@@ -295,7 +295,7 @@ app.delete("/users/:id", checkAdmin, (req, res) => {
 });
 // ==================== ROOT ROUTE ====================
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/public/home.html");
+    res.sendFile(__dirname + "/home.html");
 });
 
 // Also add a catch-all for static files
