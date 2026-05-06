@@ -293,7 +293,18 @@ app.delete("/users/:id", checkAdmin, (req, res) => {
     db.run("DELETE FROM users WHERE id=? AND username != 'amanuel asefa'", [req.params.id]);
     res.json({ success: true });
 });
+// ==================== ROOT ROUTE ====================
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/public/home.html");
+});
 
+// Also add a catch-all for static files
+app.get("/home.html", (req, res) => {
+    res.sendFile(__dirname + "/public/home.html");
+});
+
+// ==================== START ====================
+app.listen(PORT, () => {
 // ==================== START ====================
 app.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
