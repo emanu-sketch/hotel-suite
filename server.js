@@ -303,9 +303,78 @@ app.get("/home.html", (req, res) => {
     res.sendFile(__dirname + "/public/home.html");
 });
 
+// Serve HTML files from root directory
+app.get("/:page.html", (req, res) => {
+    const page = req.params.page;
+    res.sendFile(__dirname + `/${page}.html`);
+});
 // ==================== START ====================
-app.listen(PORT, () => {
-// ==================== START ====================
+// ==================== SERVE HTML PAGES ====================
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/home.html");
+});
+
+app.get("/home.html", (req, res) => {
+    res.sendFile(__dirname + "/home.html");
+});
+
+app.get("/login.html", (req, res) => {
+    res.sendFile(__dirname + "/login.html");
+});
+
+app.get("/register.html", (req, res) => {
+    res.sendFile(__dirname + "/register.html");
+});
+
+app.get("/index.html", (req, res) => {
+    res.sendFile(__dirname + "/index.html");
+});
+
+app.get("/manager.html", (req, res) => {
+    res.sendFile(__dirname + "/manager.html");
+});
+
+app.get("/user.html", (req, res) => {
+    res.sendFile(__dirname + "/user.html");
+});
+
+app.get("/rooms.html", (req, res) => {
+    res.sendFile(__dirname + "/rooms.html");
+});
+
+app.get("/bookings.html", (req, res) => {
+    res.sendFile(__dirname + "/bookings.html");
+});
+
+app.get("/customers.html", (req, res) => {
+    res.sendFile(__dirname + "/customers.html");
+});
+
+app.get("/suites.html", (req, res) => {
+    res.sendFile(__dirname + "/suites.html");
+});
+
+app.get("/services.html", (req, res) => {
+    res.sendFile(__dirname + "/services.html");
+});
+
+app.get("/experiences.html", (req, res) => {
+    res.sendFile(__dirname + "/experiences.html");
+});
+
+app.get("/testimonials.html", (req, res) => {
+    res.sendFile(__dirname + "/testimonials.html");
+});
+
+app.get("/contact.html", (req, res) => {
+    res.sendFile(__dirname + "/contact.html");
+});
+
+app.get("/support.html", (req, res) => {
+    res.sendFile(__dirname + "/support.html");
+});
+
+// ==================== START SERVER ====================
 app.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
 });
