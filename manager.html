@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HotelSuite | Manager Portal</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<script>
+    // Check if user is manager ONLY (not admin)
+    fetch("/me", { credentials: "include" })
+    .then(res => {
+        if (res.status === 401) {
+            window.location.href = "login.html";
+            return;
+        }
+        return res.json();
+    })
+    .then(user => {
+        if (user && user.role !== "manager") {  // Only managers allowed!
+            window.location.href = "index.html";  // Admins go to admin dashboard
+        }
+    });
+</script>
+</script>    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .role-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .role-admin { background: #ef4444; color: white; }
+        .role-manager { background: #f59e0b; color: white; }
+        .role-user { background: #10b981; color: white; }
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+        .notification-item.unread {
+            background: var(--bg);
+            border-left: 3px solid var(--primary);
+        }
+        .feedback-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .rating-stars {
+            color: #f59e0b;
+            font-size: 0.8rem;
+        }
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .tab-pane {
+            display: none;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+        }
+        .notifications-panel {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            width: 350px;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+        .room-type-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .premium-badge {
+            background: #f59e0b;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        .standard-badge {
+            background: #64748b;
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-brand" onclick="toggleSidebar()">
+        <div class="logo-box"><i class="bi bi-building"></i></div>
+        <span class="brand-name">HotelSuite</span>
+        <i class="bi bi-list ms-auto" id="toggleIcon" style="margin-left: auto;"></i>
+    </div>
+    
+    <nav class="nav-menu">
+    <a href="index.html" class="nav-item">
+        <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+    </a>
+    <a href="rooms.html" class="nav-item">
+        <i class="bi bi-door-open"></i> <span>Rooms</span>
+    </a>
+    <a href="bookings.html" class="nav-item">
+        <i class="bi bi-calendar-check"></i> <span>Bookings</span>
+    </a>
+    <a href="customers.html" class="nav-item">
+        <i class="bi bi-people"></i> <span>Customers</span>
+    </a>
+    <a href="manager.html" class="nav-item active">
+        <i class="bi bi-shield-lock"></i> <span>Manager Portal</span>
+    </a>
+    <div style="margin-top: 2rem;">
+        <button onclick="logout()" class="nav-item" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer;">
+            <i class="bi bi-box-arrow-right"></i> <span>Logout</span>
+        </button>
+    </div>
+</nav>
+</div>
+
+<div class="main-content">
+    <div class="view-container">
+        <header class="top-nav">
+            <h2>Manager Dashboard</h2>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <div class="notification-bell" onclick="toggleNotifications()">
+                    <i class="bi bi-bell-fill" style="font-size: 1.5rem;"></i>
+                    <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+                </div>
+                <button class="theme-switch" onclick="toggleTheme()">
+                    <i id="themeIcon" class="bi bi-moon-stars-fill"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Notifications Panel -->
+        <div id="notificationsPanel" class="notifications-panel" style="display: none;">
+            <div style="padding: 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
+                <h4>Notifications</h4>
+                <i class="bi bi-x-lg" onclick="toggleNotifications()" style="cursor: pointer;"></i>
+            </div>
+            <div id="notificationsList"></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('admins')">👥 Staff Management</button>
+            <button class="tab-btn" onclick="switchTab('feedback')">💬 Guest Feedback</button>
+            <button class="tab-btn" onclick="switchTab('settings')">⚙️ Hotel Settings</button>
+            <button class="tab-btn" onclick="switchTab('room-types')">🏷️ Room Types</button>
+        </div>
+
+<!-- Staff Management Tab - Professional -->
+<div id="admins-tab" class="tab-pane active">
+    <div class="glass-card">
+        <h3><i class="bi bi-people"></i> Employee Management</h3>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1rem;">Hire, manage roles, and control system access for hotel employees</p>
+        
+<!-- Add New Employee Form - Clean & Simple -->
+<div style="background: var(--bg); padding: 1.25rem; border-radius: 16px; margin-bottom: 1.5rem;">
+    <h4 style="margin-bottom: 1rem; font-size: 1rem;"><i class="bi bi-person-badge"></i> Add New User</h4>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        <div>
+            <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Full Name</label>
+            <input type="text" id="empFullname" placeholder="Full name" style="width: 100%; padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card);">
+        </div>
+        <div>
+            <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Email</label>
+            <input type="email" id="empEmail" placeholder="email@example.com" style="width: 100%; padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card);">
+        </div>
+        <div>
+            <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Username *</label>
+            <input type="text" id="empUsername" placeholder="username" style="width: 100%; padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card);">
+        </div>
+        <div>
+            <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Password *</label>
+            <input type="password" id="empPassword" placeholder="Min 6 characters" style="width: 100%; padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card);">
+        </div>
+        <div>
+            <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Role *</label>
+            <select id="empRole" style="width: 100%; padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card);">
+                <option value="user">👤 User</option>
+                <option value="manager">⭐ Manager</option>
+                <option value="admin">👑 Admin</option>
+            </select>
+        </div>
+        <div style="display: flex; align-items: flex-end;">
+            <button class="btn btn-primary" onclick="hireEmployee()" style="padding: 0.6rem 1.5rem; width: 100%;">
+                <i class="bi bi-person-plus"></i> Add User
+            </button>
+        </div>
+    </div>
+    <div id="hireMessage" style="margin-top: 0.75rem; font-size: 0.75rem;"></div>
+</div>
+        
+        <!-- Employee Directory -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h4 style="font-size: 0.9rem;"><i class="bi bi-building"></i> Employee Directory</h4>
+            <div>
+                <input type="text" id="empSearch" placeholder="Search employees..." onkeyup="filterEmployees()" style="padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); font-size: 0.8rem;">
+            </div>
+        </div>
+        
+        <div style="max-height: 450px; overflow-y: auto; border: 1px solid var(--border); border-radius: 16px;">
+            <table style="width: 100%; font-size: 0.85rem;">
+                <thead style="background: var(--bg); position: sticky; top: 0;">
+                    <tr>
+                        <th style="padding: 0.75rem; text-align: left;">Employee</th>
+                        <th style="padding: 0.75rem; text-align: left;">Contact</th>
+                        <th style="padding: 0.75rem; text-align: left;">Department</th>
+                        <th style="padding: 0.75rem; text-align: left;">Role</th>
+                        <th style="padding: 0.75rem; text-align: center;">Status</th>
+                        <th style="padding: 0.75rem; text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employeesList"></tbody>
+            </table>
+        </div>
+        
+        <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(99, 102, 241, 0.08); border-radius: 12px; font-size: 0.7rem; color: var(--text-muted);">
+            <i class="bi bi-shield-check"></i> Protected admin accounts cannot be modified. All hiring and role changes are logged.
+        </div>
+    </div>
+</div>
+        <!-- Feedback Tab -->
+        <div id="feedback-tab" class="tab-pane">
+            <div class="glass-card">
+                <h3><i class="bi bi-chat-dots"></i> Guest Feedback</h3>
+                <div id="feedbackList"></div>
+            </div>
+        </div>
+
+        <!-- Hotel Settings Tab -->
+        <div id="settings-tab" class="tab-pane">
+            <div class="glass-card">
+                <h3><i class="bi bi-geo-alt"></i> Hotel Location Settings</h3>
+                <div class="form-group">
+                    <label>Hotel Name</label>
+                    <input type="text" id="hotelName" class="form-control" placeholder="HotelSuite Luxury">
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" id="hotelCity" class="form-control" placeholder="New Delhi">
+                </div>
+                <div class="form-group">
+                    <label>Latitude</label>
+                    <input type="text" id="hotelLat" class="form-control" placeholder="28.6139">
+                </div>
+                <div class="form-group">
+                    <label>Longitude</label>
+                    <input type="text" id="hotelLon" class="form-control" placeholder="77.2090">
+                </div>
+                <button class="btn btn-primary" onclick="saveHotelSettings()">Save Settings</button>
+            </div>
+        </div>
+
+   <!-- Room Types Tab -->
+<div id="room-types-tab" class="tab-pane">
+    <div class="glass-card">
+        <h3><i class="bi bi-door-open"></i> Room Type Management</h3>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1rem;">Manage room categories and choose display images</p>
+        
+        <!-- Add New Room Type Form -->
+        <div style="background: var(--bg); padding: 1.25rem; border-radius: 16px; margin-bottom: 1.5rem;">
+            <h4 style="margin-bottom: 1rem; font-size: 1rem;"><i class="bi bi-plus-circle"></i> Add Room Type</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Room Type Name</label>
+                    <input type="text" id="newRoomTypeName" placeholder="e.g., Presidential Suite" style="width: 100%; padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card);">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Choose Image</label>
+                    <select id="newRoomTypeImage" style="width: 100%; padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card);">
+                        <option value="standard">🏨 Standard Room</option>
+                        <option value="deluxe">✨ Deluxe Room</option>
+                        <option value="suite">🛋️ Suite</option>
+                        <option value="presidential">👑 Presidential</option>
+                        <option value="ocean">🌊 Ocean View</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Premium</label>
+                    <select id="newRoomTypePremium" style="width: 100%; padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card);">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn btn-primary" onclick="addRoomType()" style="padding: 0.6rem 1.5rem; width: 100%;">
+                        <i class="bi bi-plus-lg"></i> Add Type
+                    </button>
+                </div>
+            </div>
+            <div id="roomTypeMessage" style="margin-top: 0.75rem; font-size: 0.75rem;"></div>
+        </div>
+        
+        <!-- Room Types List -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h4 style="font-size: 0.9rem;"><i class="bi bi-grid-3x3-gap-fill"></i> Room Categories</h4>
+            <input type="text" id="roomTypeSearch" placeholder="Search..." onkeyup="filterRoomTypes()" style="padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); font-size: 0.8rem;">
+        </div>
+        
+        <div id="roomTypesList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; max-height: 450px; overflow-y: auto;"></div>
+    </div>
+</div>
+
+    <script>
+    let notificationsOpen = false;
+    let allEmployees = [];
+    let allRoomCategories = [];
+
+    // ==================== DEFAULT ROOM IMAGES ====================
+   // ==================== ROOM TYPES WITH 5 IMAGE CHOICES ====================
+const ROOM_IMAGES = {
+    standard: 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?w=400',
+    deluxe: 'https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?w=400',
+    suite: 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?w=400',
+    presidential: 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?w=400',
+    ocean: 'https://images.pexels.com/photos/2166716/pexels-photo-2166716.jpeg?w=400'
+};
+
+let allRoomTypes = [];
+
+function loadRoomTypes() {
+    fetch("/room-types", { credentials: "include" })
+    .then(res => res.json())
+    .then(types => {
+        allRoomTypes = types;
+        renderRoomTypes(types);
+    });
+}
+
+function renderRoomTypes(types) {
+    const container = document.getElementById('roomTypesList');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (types.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 2rem; grid-column: 1/-1;">No room types. Add your first type above!</div>';
+        return;
+    }
+    
+    types.forEach(type => {
+        const imageKey = type.image_key || 'standard';
+        const imageUrl = ROOM_IMAGES[imageKey] || ROOM_IMAGES.standard;
+        const premiumBadge = type.is_premium ? '<span style="background: #f59e0b; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.65rem;">⭐ Premium</span>' : '<span style="background: #64748b; color: white; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.65rem;">Standard</span>';
+        
+        container.innerHTML += `
+            <div style="background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border);">
+                <div style="position: relative; height: 160px; overflow: hidden;">
+                    <img src="${imageUrl}" alt="${type.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div style="position: absolute; top: 10px; right: 10px;">
+                        ${premiumBadge}
+                    </div>
+                </div>
+                <div style="padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <h4 style="font-size: 1rem;">${escapeHtml(type.name)}</h4>
+                        <button onclick="deleteRoomType(${type.id})" style="background: none; border: none; cursor: pointer; color: var(--danger);">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <label style="font-size: 0.7rem; color: var(--text-muted);">Change Image:</label>
+                        <select onchange="changeRoomImage(${type.id}, this.value)" style="width: 100%; margin-top: 0.3rem; padding: 0.4rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); font-size: 0.75rem;">
+                            <option value="standard" ${imageKey === 'standard' ? 'selected' : ''}>🏨 Standard Room</option>
+                            <option value="deluxe" ${imageKey === 'deluxe' ? 'selected' : ''}>✨ Deluxe Room</option>
+                            <option value="suite" ${imageKey === 'suite' ? 'selected' : ''}>🛋️ Suite</option>
+                            <option value="presidential" ${imageKey === 'presidential' ? 'selected' : ''}>👑 Presidential</option>
+                            <option value="ocean" ${imageKey === 'ocean' ? 'selected' : ''}>🌊 Ocean View</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function filterRoomTypes() {
+    const term = document.getElementById('roomTypeSearch')?.value.toLowerCase() || '';
+    const filtered = allRoomTypes.filter(type => type.name.toLowerCase().includes(term));
+    renderRoomTypes(filtered);
+}
+
+function addRoomType() {
+    const name = document.getElementById('newRoomTypeName').value.trim();
+    const is_premium = parseInt(document.getElementById('newRoomTypePremium').value);
+    const image_key = document.getElementById('newRoomTypeImage').value;
+    const messageDiv = document.getElementById('roomTypeMessage');
+    
+    if (!name) {
+        messageDiv.innerHTML = '<span style="color: #ef4444;">❌ Room type name required</span>';
+        setTimeout(() => messageDiv.innerHTML = '', 2000);
+        return;
+    }
+    
+    messageDiv.innerHTML = '<span style="color: #10b981;">⏳ Adding room type...</span>';
+    
+    fetch("/room-types", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ name, is_premium, image_key })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.id) {
+            messageDiv.innerHTML = '<span style="color: #10b981;">✅ Room type added!</span>';
+            document.getElementById('newRoomTypeName').value = '';
+            document.getElementById('newRoomTypePremium').value = '0';
+            document.getElementById('newRoomTypeImage').value = 'standard';
+            loadRoomTypes();
+            setTimeout(() => messageDiv.innerHTML = '', 2000);
+        } else {
+            messageDiv.innerHTML = `<span style="color: #ef4444;">❌ ${data.error || 'Failed'}</span>`;
+            setTimeout(() => messageDiv.innerHTML = '', 2000);
+        }
+    });
+}
+
+function changeRoomImage(typeId, imageKey) {
+    fetch(`/room-types/${typeId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ image_key: imageKey })
+    }).then(() => loadRoomTypes());
+}
+
+function deleteRoomType(typeId) {
+    fetch(`/room-types/${typeId}`, { method: 'DELETE', credentials: 'include' })
+    .then(() => loadRoomTypes());
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+}
+
+    // ==================== TAB SWITCHING ====================
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+        document.getElementById(`${tabName}-tab`).classList.add('active');
+        
+        if (tabName === 'admins') loadEmployees();
+        if (tabName === 'feedback') loadFeedback();
+        if (tabName === 'settings') loadHotelSettings();
+        if (tabName === 'room-types') loadRoomCategories();
+    }
+
+    // ==================== NOTIFICATIONS ====================
+    function toggleNotifications() {
+        const panel = document.getElementById('notificationsPanel');
+        notificationsOpen = !notificationsOpen;
+        panel.style.display = notificationsOpen ? 'block' : 'none';
+        if (notificationsOpen) loadNotifications();
+    }
+
+    function loadNotifications() {
+        fetch("/notifications", { credentials: "include" })
+        .then(res => res.json())
+        .then(notifications => {
+            const container = document.getElementById('notificationsList');
+            const unreadCount = notifications.filter(n => !n.is_read).length;
+            const badge = document.getElementById('notificationBadge');
+            if (unreadCount > 0) {
+                badge.style.display = 'inline-block';
+                badge.innerText = unreadCount;
+            } else {
+                badge.style.display = 'none';
+            }
+            
+            container.innerHTML = '';
+            if (notifications.length === 0) {
+                container.innerHTML = '<p style="padding: 1rem;">No notifications</p>';
+                return;
+            }
+            notifications.forEach(n => {
+                container.innerHTML += `
+                    <div class="notification-item ${!n.is_read ? 'unread' : ''}" onclick="markNotificationRead(${n.id})">
+                        <div style="font-size: 0.85rem;">${n.message}</div>
+                        <small style="color: var(--text-muted);">${new Date(n.created_at).toLocaleString()}</small>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    function markNotificationRead(id) {
+        fetch(`/notifications/${id}/read`, { method: 'PUT', credentials: 'include' })
+        .then(() => loadNotifications());
+    }
+
+    // ==================== EMPLOYEE MANAGEMENT ====================
+    function loadEmployees() {
+        fetch("/users", { credentials: "include" })
+        .then(res => res.json())
+        .then(users => {
+            allEmployees = users;
+            renderEmployeesList(users);
+        });
+    }
+
+   function renderEmployeesList(employees) {
+    const container = document.getElementById('employeesList');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (employees.length === 0) {
+        container.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No users found</tr>';
+        return;
+    }
+    
+    employees.forEach(emp => {
+        const isProtected = emp.username === 'amanuel asefa' || emp.username === 'admin';
+        const roleIcon = emp.role === 'admin' ? '👑' : emp.role === 'manager' ? '⭐' : '👤';
+        const roleName = emp.role === 'admin' ? 'Admin' : emp.role === 'manager' ? 'Manager' : 'User';
+        
+        container.innerHTML += `
+            <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 0.75rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                            <i class="bi bi-person" style="font-size: 0.9rem;"></i>
+                        </div>
+                        <div>
+                            <strong>${escapeHtml(emp.fullname || emp.username)}</strong><br>
+                            <span style="font-size: 0.7rem; color: var(--text-muted);">@${emp.username}</span>
+                        </div>
+                    </div>
+                </td>
+                <td style="padding: 0.75rem;">
+                    <div style="font-size: 0.8rem;">${escapeHtml(emp.email || '—')}</div>
+                </td>
+                <td style="padding: 0.75rem;">
+                    <span style="padding: 0.25rem 0.6rem; border-radius: 20px; font-size: 0.7rem; background: ${emp.role === 'admin' ? '#ef4444' : emp.role === 'manager' ? '#f59e0b' : '#10b981'}; color: white;">
+                        ${roleIcon} ${roleName}
+                    </span>
+                </td>
+                <td style="padding: 0.75rem; text-align: center;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></span>
+                    <span style="font-size: 0.7rem;">Active</span>
+                </td>
+                <td style="padding: 0.75rem; text-align: center;">
+                    <div style="display: flex; gap: 0.3rem; justify-content: center;">
+                        <select onchange="updateUserRole(${emp.id}, this.value)" style="padding: 0.25rem 0.4rem; font-size: 0.7rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg);">
+                            <option value="user" ${emp.role === 'user' ? 'selected' : ''}>User</option>
+                            <option value="manager" ${emp.role === 'manager' ? 'selected' : ''}>Manager</option>
+                            <option value="admin" ${emp.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        </select>
+                        ${!isProtected ? `<button class="btn-danger" style="padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem;" onclick="deleteUser(${emp.id})">Delete</button>` : '<span style="font-size: 0.65rem; color: var(--text-muted);"><i class="bi bi-shield-check"></i> Protected</span>'}
+                    </div>
+                </td>
+            </table>
+        `;
+    });
+}
+
+    function getDefaultDepartment(role) {
+        switch(role) {
+            case 'admin': return 'Executive';
+            case 'manager': return 'Management';
+            default: return 'Operations';
+        }
+    }
+
+    function filterEmployees() {
+        const searchTerm = document.getElementById('empSearch')?.value.toLowerCase() || '';
+        const filtered = allEmployees.filter(emp => 
+            emp.username.toLowerCase().includes(searchTerm) || 
+            (emp.fullname && emp.fullname.toLowerCase().includes(searchTerm)) ||
+            (emp.email && emp.email.toLowerCase().includes(searchTerm))
+        );
+        renderEmployeesList(filtered);
+    }
+
+    function hireEmployee() {
+        const fullname = document.getElementById('empFullname').value.trim();
+        const email = document.getElementById('empEmail').value.trim();
+        const phone = document.getElementById('empPhone').value.trim();
+        const username = document.getElementById('empUsername').value.trim();
+        const password = document.getElementById('empPassword').value.trim();
+        const department = document.getElementById('empDepartment').value;
+        const role = document.getElementById('empRole').value;
+        const hireDate = document.getElementById('empHireDate').value;
+        const messageDiv = document.getElementById('hireMessage');
+        
+        if (!username || !password) {
+            messageDiv.innerHTML = '<span style="color: #ef4444;">❌ Username and password required</span>';
+            setTimeout(() => messageDiv.innerHTML = '', 3000);
+            return;
+        }
+        
+        if (password.length < 6) {
+            messageDiv.innerHTML = '<span style="color: #ef4444;">❌ Password must be at least 6 characters</span>';
+            setTimeout(() => messageDiv.innerHTML = '', 3000);
+            return;
+        }
+        
+        messageDiv.innerHTML = '<span style="color: #10b981;">⏳ Hiring employee...</span>';
+        
+        fetch("/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                username, password, role,
+                email: email || null,
+                fullname: fullname || username,
+                phone: phone || null,
+                department: department,
+                hire_date: hireDate || null
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success || data.id) {
+                messageDiv.innerHTML = '<span style="color: #10b981;">✅ Employee hired successfully!</span>';
+                document.getElementById('empFullname').value = '';
+                document.getElementById('empEmail').value = '';
+                document.getElementById('empPhone').value = '';
+                document.getElementById('empUsername').value = '';
+                document.getElementById('empPassword').value = '';
+                document.getElementById('empHireDate').value = '';
+                loadEmployees();
+                setTimeout(() => messageDiv.innerHTML = '', 3000);
+            } else {
+                messageDiv.innerHTML = `<span style="color: #ef4444;">❌ ${data.error || 'Failed to hire'}</span>`;
+                setTimeout(() => messageDiv.innerHTML = '', 3000);
+            }
+        })
+        .catch(() => {
+            messageDiv.innerHTML = '<span style="color: #ef4444;">❌ Network error</span>';
+            setTimeout(() => messageDiv.innerHTML = '', 3000);
+        });
+    }
+
+    function updateEmployeeRole(userId, newRole) {
+        fetch(`/users/${userId}/role`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ role: newRole })
+        }).then(() => loadEmployees());
+    }
+
+    function terminateEmployee(userId) {
+        fetch(`/users/${userId}`, { method: 'DELETE', credentials: 'include' })
+        .then(() => loadEmployees());
+    }
+
+    // ==================== FEEDBACK ====================
+    function loadFeedback() {
+        fetch("/feedback", { credentials: "include" })
+        .then(res => res.json())
+        .then(feedbacks => {
+            const container = document.getElementById('feedbackList');
+            container.innerHTML = '';
+            if (feedbacks.length === 0) {
+                container.innerHTML = '<p style="padding: 1rem;">No feedback yet</p>';
+                return;
+            }
+            feedbacks.forEach(f => {
+                container.innerHTML += `
+                    <div class="feedback-item">
+                        <div class="rating-stars">${'★'.repeat(f.rating)}${'☆'.repeat(5-f.rating)}</div>
+                        <strong>${f.username}</strong> - <small>${new Date(f.created_at).toLocaleString()}</small>
+                        <p style="margin-top: 0.5rem;">${f.comment}</p>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    // ==================== HOTEL SETTINGS ====================
+    function loadHotelSettings() {
+        fetch("/hotel-settings", { credentials: "include" })
+        .then(res => res.json())
+        .then(settings => {
+            document.getElementById('hotelName').value = settings.hotel_name || '';
+            document.getElementById('hotelCity').value = settings.hotel_city || '';
+            document.getElementById('hotelLat').value = settings.hotel_lat || '';
+            document.getElementById('hotelLon').value = settings.hotel_lon || '';
+        });
+    }
+
+    function saveHotelSettings() {
+        const settings = {
+            hotel_name: document.getElementById('hotelName').value,
+            hotel_city: document.getElementById('hotelCity').value,
+            hotel_lat: document.getElementById('hotelLat').value,
+            hotel_lon: document.getElementById('hotelLon').value
+        };
+        fetch("/hotel-settings", {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(settings)
+        }).then(() => {});
+    }
+
+    // ==================== ROOM CATEGORIES WITH IMAGES ====================
+    function loadRoomCategories() {
+        fetch("/room-types", { credentials: "include" })
+        .then(res => res.json())
+        .then(types => {
+            allRoomCategories = types;
+            renderRoomCategories(types);
+        });
+    }
+
+    function renderRoomCategories(categories) {
+        const container = document.getElementById('roomTypesList');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        if (categories.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; grid-column: 1/-1;">No room categories. Add your first category above!</div>';
+            return;
+        }
+        
+        const sorted = [...categories].sort((a, b) => b.is_premium - a.is_premium);
+        
+        sorted.forEach(cat => {
+            const level = cat.is_premium === 2 ? '🌟🌟 Luxury Suite' : cat.is_premium === 1 ? '⭐ Premium' : '🏠 Standard';
+            const levelColor = cat.is_premium === 2 ? '#f59e0b' : cat.is_premium === 1 ? '#10b981' : '#64748b';
+            const defaultImage = cat.image_key ? DEFAULT_ROOM_IMAGES[cat.image_key] : DEFAULT_ROOM_IMAGES.standard;
+            const capacityText = cat.capacity ? (cat.capacity === 1 ? '1 Person' : cat.capacity === 2 ? '2 Persons' : cat.capacity === 4 ? '4 Persons' : cat.capacity + ' Persons') : '—';
+            
+            container.innerHTML += `
+                <div style="background: var(--bg-card); border-radius: 16px; overflow: hidden; border: 1px solid var(--border); transition: all 0.2s;">
+                    <div style="position: relative; height: 140px; overflow: hidden;">
+                        <img src="${defaultImage}" alt="${cat.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 10px; right: 10px;">
+                            <span style="background: ${levelColor}; color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.7rem;">${level}</span>
+                        </div>
+                    </div>
+                    <div style="padding: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                            <h4 style="font-size: 1rem;">${escapeHtml(cat.name)}</h4>
+                            <div style="display: flex; gap: 0.3rem;">
+                                <select onchange="changeRoomCategoryImage(${cat.id}, this.value)" style="padding: 0.2rem 0.3rem; font-size: 0.7rem; border-radius: 6px;">
+                                    <option value="standard" ${cat.image_key === 'standard' ? 'selected' : ''}>🏨 Standard</option>
+                                    <option value="deluxe" ${cat.image_key === 'deluxe' ? 'selected' : ''}>✨ Deluxe</option>
+                                    <option value="suite" ${cat.image_key === 'suite' ? 'selected' : ''}>🛋️ Suite</option>
+                                    <option value="presidential" ${cat.image_key === 'presidential' ? 'selected' : ''}>👑 Presidential</option>
+                                    <option value="ocean" ${cat.image_key === 'ocean' ? 'selected' : ''}>🌊 Ocean View</option>
+                                </select>
+                                <button onclick="deleteRoomCategory(${cat.id})" style="background: none; border: none; cursor: pointer; color: var(--danger);">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem; font-size: 0.7rem; color: var(--text-secondary);">
+                            <div><i class="bi bi-currency-dollar"></i> $${cat.base_price || '—'}/night</div>
+                            <div><i class="bi bi-people"></i> ${capacityText}</div>
+                            <div><i class="bi bi-bed"></i> ${cat.bed_type || 'Standard'}</div>
+                            <div><i class="bi bi-building"></i> <span id="roomCount-${cat.id}">—</span> rooms</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            fetch(`/rooms/count-by-type?type=${encodeURIComponent(cat.name)}`, { credentials: "include" })
+            .then(res => res.json())
+            .then(data => {
+                const countSpan = document.getElementById(`roomCount-${cat.id}`);
+                if (countSpan) countSpan.innerText = data.count || 0;
+            });
+        });
+    }
+
+    function filterRoomCategories() {
+        const term = document.getElementById('roomTypeSearch')?.value.toLowerCase() || '';
+        const filtered = allRoomCategories.filter(cat => cat.name.toLowerCase().includes(term));
+        renderRoomCategories(filtered);
+    }
+
+    function addRoomTypeWithImage() {
+        const name = document.getElementById('newRoomTypeName').value.trim();
+        const base_price = document.getElementById('newRoomTypePrice').value;
+        const capacity = document.getElementById('newRoomTypeCapacity').value;
+        const bed_type = document.getElementById('newRoomTypeBed').value;
+        const is_premium = parseInt(document.getElementById('newRoomTypeLevel').value);
+        const image_key = document.getElementById('newRoomTypeImage').value;
+        const messageDiv = document.getElementById('roomTypeMessage');
+        
+        if (!name) {
+            messageDiv.innerHTML = '<span style="color: #ef4444;">❌ Category name required</span>';
+            setTimeout(() => messageDiv.innerHTML = '', 2000);
+            return;
+        }
+        
+        messageDiv.innerHTML = '<span style="color: #10b981;">⏳ Adding category...</span>';
+        
+        fetch("/room-types", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ 
+                name, is_premium, base_price: base_price || null, 
+                capacity: capacity || null, bed_type: bed_type || null, 
+                image_key: image_key || 'standard' 
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.id) {
+                messageDiv.innerHTML = '<span style="color: #10b981;">✅ Category added!</span>';
+                document.getElementById('newRoomTypeName').value = '';
+                document.getElementById('newRoomTypePrice').value = '';
+                document.getElementById('newRoomTypeCapacity').value = '2';
+                document.getElementById('newRoomTypeBed').value = 'Double Bed';
+                document.getElementById('newRoomTypeLevel').value = '0';
+                document.getElementById('newRoomTypeImage').value = 'standard';
+                loadRoomCategories();
+                setTimeout(() => messageDiv.innerHTML = '', 2000);
+            } else {
+                messageDiv.innerHTML = `<span style="color: #ef4444;">❌ ${data.error || 'Failed'}</span>`;
+                setTimeout(() => messageDiv.innerHTML = '', 2000);
+            }
+        });
+    }
+
+    function changeRoomCategoryImage(catId, imageKey) {
+        fetch(`/room-types/${catId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ image_key: imageKey })
+        }).then(() => loadRoomCategories());
+    }
+
+    function deleteRoomCategory(catId) {
+        fetch(`/room-types/${catId}`, { method: 'DELETE', credentials: 'include' })
+        .then(() => loadRoomCategories());
+    }
+
+    // ==================== UTILITIES ====================
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    function toggleTheme() {
+        const html = document.documentElement;
+        const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        const icon = document.getElementById('themeIcon');
+        if (newTheme === 'dark') {
+            icon.classList.remove('bi-sun-fill');
+            icon.classList.add('bi-moon-stars-fill');
+        } else {
+            icon.classList.remove('bi-moon-stars-fill');
+            icon.classList.add('bi-sun-fill');
+        }
+    }
+
+    function logout() {
+        fetch("/logout", { method: "POST", credentials: "include" })
+        .then(() => window.location.href = "login.html");
+    }
+
+    // ==================== INITIAL LOADS ====================
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const icon = document.getElementById('themeIcon');
+    if (savedTheme === 'dark') {
+        icon.classList.remove('bi-sun-fill');
+        icon.classList.add('bi-moon-stars-fill');
+    }
+
+    setInterval(loadNotifications, 30000);
+    
+    loadEmployees();
+    loadNotifications();
+
+    fetch("/me", { credentials: "include" })
+    .then(res => {
+        if (res.status === 401) window.location.href = "login.html";
+        return res.json();
+    })
+    .then(user => {
+        if (user && user.role !== "manager" && user.role !== "admin") {
+            window.location.href = "user.html";
+        }
+    });
+</script>
+</body>
+</html>

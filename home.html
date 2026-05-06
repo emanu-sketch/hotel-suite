@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>HotelSuite | Luxury Redefined – Home</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <style>
+        :root {
+            --deep-teal: #0f2b36;
+            --ocean: #1c6e8f;
+            --azure: #2b9bbf;
+            --gold: #e4b363;
+            --light-mist: #f8fafc;
+            --slate: #2c3e45;
+            --white-soft: #ffffff;
+            --shadow-sm: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 20px 35px -12px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 25px 45px -12px rgba(0, 0, 0, 0.25);
+            --transition-fast: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            --transition-smooth: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.7);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-light: #64748b;
+            --border-light: rgba(0, 0, 0, 0.06);
+            --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08);
+            /* Nav link colors - light mode default */
+            --nav-link-color: #1e293b;
+            --nav-link-hover: #e4b363;
+        }
+
+        body.dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-glass: rgba(30, 41, 59, 0.85);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-light: #94a3b8;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.3);
+            --deep-teal: #1e3a5f;
+            --slate: #94a3b8;
+            /* Dark mode nav link colors */
+            --nav-link-color: #f1f5f9;
+            --nav-link-hover: #e4b363;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        h1, h2, h3, .logo-text, .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* Navbar - FIXED for visibility */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2rem 2.5rem;
+            z-index: 1000;
+            transition: var(--transition-smooth);
+            background: transparent;
+        }
+
+        .navbar.scrolled {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            padding: 0.8rem 2.5rem;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--azure), var(--ocean));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            transition: var(--transition-fast);
+        }
+
+        .logo-text {
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: linear-gradient(120deg, var(--ocean), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* FIXED: Navigation links always visible - dark in light mode, light in dark mode */
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 600;
+            color: var(--nav-link-color);
+            transition: var(--transition-fast);
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        /* When navbar is not scrolled and on hero (dark background) - make links white */
+        .navbar:not(.scrolled) .nav-links a {
+            color: white;
+        }
+
+        /* When scrolled or on any page, use theme colors */
+        .navbar.scrolled .nav-links a {
+            color: var(--nav-link-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--azure));
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        .theme-switch {
+            background: rgba(0, 0, 0, 0.15);
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--nav-link-color);
+            font-size: 1.2rem;
+            margin-left: 1.2rem;
+            backdrop-filter: blur(4px);
+            transition: var(--transition-fast);
+        }
+
+        .navbar:not(.scrolled) .theme-switch {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .theme-switch:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            min-height: 720px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a3a4a, #0d2a38);
+        }
+        
+        .hero-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(0, 0, 0, 0.45), rgba(0, 20, 30, 0.65));
+            z-index: 1;
+        }
+        
+        .hero-content {
+            max-width: 880px;
+            padding: 2rem;
+            z-index: 2;
+            position: relative;
+            animation: floatUp 1.2s ease-out;
+        }
+        
+        .hero-content h1 {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        /* Buttons */
+        .btn-primary, .btn-outline-light {
+            padding: 0.9rem 2.2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(105deg, var(--azure), var(--ocean));
+            color: white;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-outline-light {
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-primary:hover, .btn-outline-light:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 28px -8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Sections */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(130deg, var(--ocean), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .blue-underline {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--azure), var(--gold));
+            margin: 1rem auto 2rem;
+            border-radius: 4px;
+            animation: expandWidth 0.6s ease-out;
+        }
+
+        @keyframes expandWidth {
+            from { width: 0; opacity: 0; }
+            to { width: 80px; opacity: 1; }
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.8rem 1rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            border: 1px solid var(--border-light);
+            transition: var(--transition-smooth);
+            animation: fadeInUp 0.6s ease backwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: var(--bg-secondary);
+            border-color: var(--gold);
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--azure);
+            font-family: 'Playfair Display', serif;
+            transition: var(--transition-fast);
+        }
+
+        .stat-card:hover .stat-number {
+            color: var(--gold);
+            transform: scale(1.05);
+            display: inline-block;
+        }
+
+        /* Rooms Grid */
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .room-card {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+            box-shadow: var(--card-shadow);
+        }
+
+        .room-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .room-card img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .room-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .room-info {
+            padding: 1.5rem;
+        }
+
+        .room-price {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--azure);
+            transition: var(--transition-fast);
+        }
+
+        .room-card:hover .room-price {
+            color: var(--gold);
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 3rem 0;
+        }
+        .welcome-text {
+            flex: 1;
+        }
+        .welcome-text h2 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .welcome-text p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .welcome-image {
+            flex: 1;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+        }
+        .welcome-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        .feature-item i {
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
+
+        /* Why Choose Us Section */
+        .why-choose-section {
+            background: var(--bg-secondary);
+            border-radius: 32px;
+            margin: 2rem auto;
+            padding: 2rem 0;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+            padding: 1rem;
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--azure);
+            transition: var(--transition-fast);
+        }
+        
+        .feature-item-card:hover .feature-icon {
+            transform: scale(1.1);
+            color: var(--gold);
+        }
+        
+        .feature-item-card h3 {
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+        
+        .feature-item-card p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Floating CTA */
+        .floating-cta {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(145deg, var(--azure), var(--ocean));
+            width: 54px;
+            height: 54px;
+            border-radius: 27px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 12px 22px rgba(0,0,0,0.25);
+            z-index: 99;
+            color: white;
+            transition: var(--transition-bounce);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 12px 22px rgba(0,0,0,0.25); }
+            50% { transform: scale(1.06); box-shadow: 0 18px 30px rgba(0,0,0,0.35); }
+        }
+
+        .floating-cta:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border-light);
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 900px) {
+            .navbar { padding: 1rem; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.6); backdrop-filter: blur(12px);}
+            .navbar.scrolled { background: var(--bg-glass); }
+            .nav-links { gap: 1rem; justify-content: center; }
+            .hero-content h1 { font-size: 2.5rem; }
+            .hero-buttons { flex-direction: column; align-items: center; gap: 1rem; }
+            .section { padding: 3rem 1.2rem; }
+            .section-title { font-size: 2rem; }
+            .welcome-section { flex-direction: column; }
+            .stats-grid { gap: 1rem; }
+            .stat-card { padding: 1.2rem; }
+            .stat-number { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar" id="navbar">
+    <div class="logo-box">
+        <i class="bi bi-gem logo-icon"></i>
+        <span class="logo-text">HotelSuite</span>
+    </div>
+    <div style="display: flex; align-items: center;">
+        <div class="nav-links">
+            <a href="home.html" class="active">Home</a>
+            <a href="suites.html">Suites</a>
+            <a href="services.html">Services</a>
+            <a href="experiences.html">Experiences</a>
+            <a href="testimonials.html">Reviews</a>
+            <a href="contact.html">Contact</a>
+            <a href="support.html">Support</a>
+        </div>
+        <button class="theme-switch" id="themeToggleBtn"><i class="bi bi-brightness-high-fill"></i></button>
+    </div>
+</div>
+
+<!-- Hero Section -->
+<div class="hero">
+    <video class="hero-video" autoplay loop muted playsinline poster="https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1600">
+        <source src="https://cdn.pixabay.com/video/2023/06/15/168821-838390800_large.mp4" type="video/mp4">
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>HotelSuite</h1>
+        <p style="font-size:1.1rem; font-weight:300;">Where every stay feels like coming home – luxury redefined for the modern traveler.</p>
+        <div class="hero-buttons">
+            <a href="login.html" class="btn-primary"><i class="bi bi-box-arrow-in-right"></i> Login / Register</a>
+            <a href="suites.html" class="btn-outline-light"><i class="bi bi-eyeglasses"></i> Discover Rooms</a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Counter Section -->
+<div class="section">
+   <div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number" id="roomCount">0</div>
+        <div>Luxury Rooms</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" id="reviewCount">0</div>
+        <div>Happy Guests</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number" id="customerCount">0</div>
+        <div>Registered Users</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">5★</div>
+        <div>Luxury Rating</div>
+    </div>
+</div>
+
+<!-- Welcome Section -->
+<div class="section">
+    <div class="welcome-section">
+        <div class="welcome-text">
+            <h2>Welcome to HotelSuite</h2>
+            <p>Nestled along the pristine coastline, HotelSuite redefines luxury hospitality. Every detail, from our handpicked furnishings to our Michelin-inspired dining, is crafted to create unforgettable moments.</p>
+            <div class="feature-list">
+                <div class="feature-item"><i class="bi bi-check-circle-fill"></i> <span>Award-winning service</span></div>
+                <div class="feature-item"><i class="bi bi-check-circle-fill"></i> <span>Oceanfront infinity pool</span></div>
+                <div class="feature-item"><i class="bi bi-check-circle-fill"></i> <span>Private butler for every suite</span></div>
+                <div class="feature-item"><i class="bi bi-check-circle-fill"></i> <span>Complimentary airport transfers</span></div>
+            </div>
+            <a href="services.html" style="display: inline-block; margin-top: 1.5rem;" class="btn-primary">Explore Our Services →</a>
+        </div>
+        <div class="welcome-image">
+            <img src="https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1000" alt="HotelSuite Lobby">
+        </div>
+    </div>
+</div>
+
+<!-- Featured Rooms -->
+<div class="section">
+    <h2 class="section-title">Our Signature Suites</h2>
+    <div class="blue-underline"></div>
+    <p class="section-subtitle">Curated for the discerning traveler</p>
+    <div id="featuredRoomsList" class="rooms-grid"></div>
+    <div style="text-align: center; margin-top: 2.5rem;">
+        <a href="suites.html" class="btn-primary">View All Collections →</a>
+    </div>
+</div>
+
+<!-- Why Choose Us Section -->
+<div class="section why-choose-section">
+    <h2 class="section-title">Why Choose Us</h2>
+    <div class="blue-underline"></div>
+    <div class="features-grid">
+        <div class="feature-item-card"><i class="bi bi-shield-check feature-icon"></i><h3>Safe & Secure</h3><p>24/7 security</p></div>
+        <div class="feature-item-card"><i class="bi bi-wifi feature-icon"></i><h3>High-Speed WiFi</h3><p>1 Gbps connection</p></div>
+        <div class="feature-item-card"><i class="bi bi-cup-straw feature-icon"></i><h3>Welcome Drink</h3><p>On arrival</p></div>
+        <div class="feature-item-card"><i class="bi bi-credit-card feature-icon"></i><h3>Best Rate</h3><p>Price guarantee</p></div>
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 HotelSuite – The Epitome of Luxury Hospitality</p>
+</footer>
+
+<div class="floating-cta" onclick="location.href='register.html'">
+    <i class="bi bi-calendar-check"></i>
+</div>
+
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script>
+   <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script>
+    // Dynamic Dark Mode
+    function setTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark');
+            localStorage.setItem('hotel_theme', 'dark');
+            const icon = document.querySelector('#themeToggleBtn i');
+            if (icon) icon.className = 'bi bi-moon-stars-fill';
+        } else {
+            document.body.classList.remove('dark');
+            localStorage.setItem('hotel_theme', 'light');
+            const icon = document.querySelector('#themeToggleBtn i');
+            if (icon) icon.className = 'bi bi-brightness-high-fill';
+        }
+    }
+
+    const savedTheme = localStorage.getItem('hotel_theme');
+    if (savedTheme === 'dark') setTheme('dark');
+    else setTheme('light');
+
+    const themeBtn = document.getElementById('themeToggleBtn');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            const isDark = document.body.classList.contains('dark');
+            setTheme(isDark ? 'light' : 'dark');
+        });
+    }
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (nav) {
+            if (window.scrollY > 40) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        }
+    });
+
+    // Counter animation
+    function animateCounter(element, target) {
+        let current = 0;
+        const step = Math.ceil(target / 40);
+        const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+                element.innerText = target;
+                clearInterval(timer);
+            } else {
+                element.innerText = current;
+            }
+        }, 25);
+    }
+
+    // ==================== LOAD REAL DATA FROM DATABASE ====================
+    
+    // Load real room count from database
+    function loadRoomCount() {
+        fetch("/rooms", { credentials: "include" })
+            .then(res => res.json())
+            .then(rooms => {
+                const roomCount = rooms.length;
+                animateCounter(document.getElementById('roomCount'), roomCount);
+            })
+            .catch(() => {
+                animateCounter(document.getElementById('roomCount'), 24);
+            });
+    }
+
+    // Load real customer count from database
+    function loadCustomerCount() {
+        fetch("/customers", { credentials: "include" })
+            .then(res => res.json())
+            .then(customers => {
+                const customerCount = customers.length;
+                document.getElementById('customerCount').innerText = customerCount;
+            })
+            .catch(() => {
+                document.getElementById('customerCount').innerText = '500+';
+            });
+    }
+
+    // Load featured rooms from database
+    function loadFeaturedRooms() {
+        fetch("/rooms", { credentials: "include" })
+            .then(res => res.json())
+            .then(rooms => {
+                const container = document.getElementById('featuredRoomsList');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                // Get first 3 rooms as featured
+                const featuredRooms = rooms.slice(0, 3);
+                
+                if (featuredRooms.length === 0) {
+                    container.innerHTML = '<div style="text-align: center; grid-column: 1/-1;">No rooms available yet</div>';
+                    return;
+                }
+                
+                featuredRooms.forEach(room => {
+                    const roomImage = room.image_url || 'https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?w=400';
+                    
+                    container.innerHTML += `
+                        <div class="room-card">
+                            <img src="${roomImage}" alt="Room ${room.number}" style="width: 100%; height: 260px; object-fit: cover;">
+                            <div class="room-info">
+                                <h3>${escapeHtml(room.type)}</h3>
+                                <p>Room ${room.number} · 
+                                    ${room.type.includes('Suite') ? 'Ocean Wing' : room.type.includes('Deluxe') ? 'Premium Wing' : 'Garden Wing'}
+                                </p>
+                                <div class="room-price">$${room.price}<span style="font-size:0.85rem;"> / night</span></div>
+                                <a href="register.html" class="btn-primary" style="display:inline-block; margin-top:1rem; padding:0.5rem 1rem; font-size:0.85rem;">Book Now →</a>
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(err => {
+                console.error("Error loading rooms:", err);
+                // Fallback demo data
+                const fallbackRooms = [
+                    { type: "Presidential Sky Villa", number: "PH01", price: 1890, image: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?w=400" },
+                    { type: "Ocean Grand Suite", number: "814", price: 1090, image: "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?w=400" },
+                    { type: "Heritage Royal Chamber", number: "312", price: 790, image: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?w=400" }
+                ];
+                fallbackRooms.forEach(room => {
+                    container.innerHTML += `
+                        <div class="room-card">
+                            <img src="${room.image}" alt="Room" style="width: 100%; height: 260px; object-fit: cover;">
+                            <div class="room-info">
+                                <h3>${room.type}</h3>
+                                <p>Room ${room.number}</p>
+                                <div class="room-price">$${room.price}<span style="font-size:0.85rem;"> / night</span></div>
+                                <a href="register.html" class="btn-primary" style="display:inline-block; margin-top:1rem;">Book Now →</a>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+    }
+
+    // Load hotel settings for location
+    function loadHotelSettings() {
+        fetch("/hotel-settings", { credentials: "include" })
+            .then(res => res.json())
+            .then(settings => {
+                const hotelName = settings.hotel_name || 'HotelSuite';
+                const hotelCity = settings.hotel_city || 'Luxury Destination';
+                document.querySelector('footer p').innerHTML = `© 2025 ${hotelName} – The Epitome of Luxury Hospitality`;
+            })
+            .catch(() => {});
+    }
+
+    // Load total reviews count
+    function loadReviewsCount() {
+        fetch("/feedback", { credentials: "include" })
+            .then(res => res.json())
+            .then(feedbacks => {
+                const reviewCount = feedbacks.length;
+                if (reviewCount > 0) {
+                    animateCounter(document.getElementById('reviewCount'), reviewCount);
+                } else {
+                    animateCounter(document.getElementById('reviewCount'), 2847);
+                }
+            })
+            .catch(() => {
+                animateCounter(document.getElementById('reviewCount'), 2847);
+            });
+    }
+
+    // Load average rating
+    function loadAverageRating() {
+        fetch("/feedback", { credentials: "include" })
+            .then(res => res.json())
+            .then(feedbacks => {
+                if (feedbacks.length > 0) {
+                    const totalRating = feedbacks.reduce((sum, f) => sum + f.rating, 0);
+                    const avgRating = (totalRating / feedbacks.length).toFixed(1);
+                    const ratingElement = document.querySelector('.stat-card:last-child .stat-number');
+                    if (ratingElement) ratingElement.innerText = avgRating + '★';
+                }
+            })
+            .catch(() => {});
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Initialize all data loading
+    loadRoomCount();
+    loadCustomerCount();
+    loadFeaturedRooms();
+    loadHotelSettings();
+    loadReviewsCount();
+    loadAverageRating();
+
+    // Hero video fallback
+    const heroVideo = document.querySelector('.hero-video');
+    if (heroVideo) {
+        heroVideo.addEventListener('error', function() {
+            this.style.display = 'none';
+        });
+    }
+</script>
+</script>
+</body>
+</html>

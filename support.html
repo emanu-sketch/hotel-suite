@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HotelSuite | 24/7 Guest Support</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="shared.css">
+    <style>
+        .page-hero {
+            height: 35vh;
+            min-height: 280px;
+            background: linear-gradient(135deg, var(--ocean), var(--deep-teal));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            margin-top: 80px;
+        }
+        
+        .page-hero .hero-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .support-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .support-card {
+            background: var(--bg-secondary);
+            border-radius: 28px;
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition-smooth);
+            border: 1px solid var(--border-light);
+        }
+        
+        .support-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold);
+        }
+        
+        .support-card i {
+            font-size: 2.5rem;
+            color: var(--azure);
+            margin-bottom: 1rem;
+        }
+        
+        .emergency-number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+        }
+        
+        .faq-item {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            border: 1px solid var(--border-light);
+        }
+        
+        .faq-item:hover {
+            border-color: var(--gold);
+        }
+        
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .faq-answer {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+            color: var(--text-secondary);
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .support-cta {
+            text-align: center;
+            background: linear-gradient(135deg, var(--azure), var(--ocean));
+            padding: 3rem;
+            border-radius: 32px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar" id="navbar">
+    <div class="logo-box"><i class="bi bi-gem logo-icon"></i><span class="logo-text">HotelSuite</span></div>
+    <div style="display: flex; align-items: center;">
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="suites.html">Suites</a>
+            <a href="services.html">Services</a>
+            <a href="experiences.html">Experiences</a>
+            <a href="testimonials.html">Reviews</a>
+            <a href="contact.html">Contact</a>
+            <a href="support.html" class="active">Support</a>
+        </div>
+        <button class="theme-switch" id="themeToggleBtn"><i class="bi bi-brightness-high-fill"></i></button>
+    </div>
+</div>
+
+<div class="page-hero">
+    <div class="hero-content">
+        <h1>24/7 Guest Support</h1>
+        <p>We're here for you, anytime, anywhere</p>
+    </div>
+</div>
+
+<div class="section">
+    <div class="support-grid">
+        <div class="support-card">
+            <i class="bi bi-telephone-fill"></i>
+            <h3>Emergency Hotline</h3>
+            <div class="emergency-number">+91 98765 43210</div>
+            <p>Available 24 hours, 7 days a week</p>
+        </div>
+        <div class="support-card">
+            <i class="bi bi-envelope-fill"></i>
+            <h3>Email Support</h3>
+            <p>concierge@hotelsuite.com</p>
+            <p>support@hotelsuite.com</p>
+            <small>Response within 2 hours</small>
+        </div>
+        <div class="support-card">
+            <i class="bi bi-whatsapp"></i>
+            <h3>WhatsApp Concierge</h3>
+            <div class="emergency-number" style="font-size: 1.3rem;">+91 98765 43211</div>
+            <small>Text or voice notes welcome</small>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="blue-underline"></div>
+    <div id="faqContainer">
+        <div class="faq-item"><div class="faq-question">What are check-in and check-out times? <i class="bi bi-chevron-down"></i></div><div class="faq-answer">Check-in is from 2:00 PM and check-out is until 12:00 PM. Early check-in and late check-out are available upon request.</div></div>
+        <div class="faq-item"><div class="faq-question">Do you offer airport transfers? <i class="bi bi-chevron-down"></i></div><div class="faq-answer">Yes, we provide complimentary airport transfers for suite bookings. For other rooms, it's available at $50 per way.</div></div>
+        <div class="faq-item"><div class="faq-question">Is there a cancellation policy? <i class="bi bi-chevron-down"></i></div><div class="faq-answer">Free cancellation up to 48 hours before arrival. After that, first night's rate applies.</div></div>
+        <div class="faq-item"><div class="faq-question">Do you have vegetarian/vegan options? <i class="bi bi-chevron-down"></i></div><div class="faq-answer">Absolutely! Our restaurants offer extensive vegetarian, vegan, and gluten-free menus.</div></div>
+        <div class="faq-item"><div class="faq-question">Is the pool heated? <i class="bi bi-chevron-down"></i></div><div class="faq-answer">Yes, our infinity pool is heated year-round and open from 6 AM to 10 PM.</div></div>
+    </div>
+</div>
+
+<div class="section">
+    <div class="support-cta">
+        <h3>Need Immediate Assistance?</h3>
+        <p style="margin: 1rem 0;">Our guest relations team is standing by</p>
+        <a href="tel:+919876543210" class="btn-outline-light" style="border-color: white; color: white; text-decoration: none; display: inline-block;">Call Now</a>
+        <a href="register.html" class="btn-primary" style="margin-left: 1rem;">Login for Priority Support</a>
+    </div>
+</div>
+
+<footer><p>© 2025 HotelSuite – The Epitome of Luxury Hospitality</p></footer>
+<div class="floating-cta" onclick="location.href='register.html'"><i class="bi bi-headset"></i></div>
+
+<script src="shared.js"></script>
+<script>
+    document.querySelectorAll('.faq-item').forEach(item => {
+        item.addEventListener('click', () => {
+            item.classList.toggle('active');
+        });
+    });
+</script>
+</body>
+</html>

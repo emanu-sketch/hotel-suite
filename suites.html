@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HotelSuite | Luxury Suites Collection</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --deep-teal: #0f2b36;
+            --ocean: #1c6e8f;
+            --azure: #2b9bbf;
+            --gold: #e4b363;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.7);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-light: #64748b;
+            --border-light: rgba(0, 0, 0, 0.06);
+            --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.08);
+            --shadow-xl: 0 25px 45px -12px rgba(0, 0, 0, 0.25);
+            --transition-smooth: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            --transition-fast: all 0.2s ease;
+            --nav-link-color: #1e293b;
+        }
+
+        body.dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-glass: rgba(30, 41, 59, 0.85);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-light: #94a3b8;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.3);
+            --nav-link-color: #f1f5f9;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: all 0.3s ease; }
+        h1, h2, h3, .logo-text { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+        /* Navbar - FIXED */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            z-index: 1000;
+            transition: var(--transition-smooth);
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .navbar.scrolled {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            padding: 0.6rem 2rem;
+        }
+        
+        .logo-box { display: flex; align-items: center; gap: 0.6rem; }
+        .logo-icon { font-size: 1.8rem; background: linear-gradient(135deg, var(--azure), var(--ocean)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo-text { font-size: 1.5rem; background: linear-gradient(120deg, var(--ocean), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        
+        .nav-links { display: flex; gap: 1.8rem; align-items: center; flex-wrap: wrap; }
+        /* FIXED: Navigation links use theme color directly (visible in both modes) */
+        .nav-links a { text-decoration: none; font-weight: 600; color: var(--nav-link-color); transition: var(--transition-fast); font-size: 0.9rem; position: relative; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0%; height: 2px; background: linear-gradient(90deg, var(--gold), var(--azure)); transition: width 0.3s ease; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-links a:hover { color: var(--gold); }
+        
+        .theme-switch { background: var(--bg-secondary); border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; color: var(--nav-link-color); font-size: 1.1rem; margin-left: 1rem; transition: var(--transition-fast); }
+        .theme-switch:hover { transform: scale(1.1) rotate(15deg); }
+
+        /* Compact Page Header */
+        .page-header { height: 30vh; min-height: 220px; background: linear-gradient(135deg, var(--ocean), var(--deep-teal)); display: flex; align-items: center; justify-content: center; text-align: center; color: white; margin-top: 70px; }
+        .page-header h1 { font-size: 2.2rem; margin-bottom: 0.3rem; }
+        .page-header p { font-size: 0.9rem; opacity: 0.9; }
+
+        .section { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+        .section-title { text-align: center; font-size: 2rem; background: linear-gradient(130deg, var(--ocean), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.3rem; }
+        .blue-underline { width: 70px; height: 3px; background: linear-gradient(90deg, var(--azure), var(--gold)); margin: 0.8rem auto 1.5rem; border-radius: 4px; }
+
+        .rooms-full-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
+        .room-card { background: var(--bg-secondary); border-radius: 24px; overflow: hidden; transition: var(--transition-smooth); box-shadow: var(--card-shadow); }
+        .room-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-xl); }
+        .room-card img { width: 100%; height: 250px; object-fit: cover; transition: transform 0.5s ease; }
+        .room-card:hover img { transform: scale(1.03); }
+        .room-info { padding: 1.5rem; }
+        .room-info h3 { margin-bottom: 0.3rem; }
+        .amenities-list { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0.8rem 0; }
+        .amenity-badge { background: var(--bg-primary); padding: 0.2rem 0.7rem; border-radius: 50px; font-size: 0.7rem; color: var(--azure); border: 1px solid var(--border-light); }
+        .room-price { font-size: 1.4rem; font-weight: 800; color: var(--azure); margin: 0.5rem 0; }
+        .btn-primary { background: linear-gradient(105deg, var(--azure), var(--ocean)); color: white; padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-block; transition: var(--transition-fast); border: none; cursor: pointer; }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.2); }
+
+        .floating-cta { position: fixed; bottom: 25px; right: 25px; background: linear-gradient(145deg, var(--azure), var(--ocean)); width: 52px; height: 52px; border-radius: 26px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.25); z-index: 99; color: white; transition: var(--transition-fast); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+        .floating-cta:hover { transform: scale(1.1) rotate(5deg); }
+        footer { text-align: center; padding: 1.5rem; border-top: 1px solid var(--border-light); font-size: 0.8rem; color: var(--text-light); }
+
+        @media (max-width: 900px) {
+            .navbar { padding: 0.8rem; flex-direction: column; gap: 10px; }
+            .nav-links { gap: 0.8rem; justify-content: center; }
+            .section { padding: 2rem 1rem; }
+            .page-header { height: 25vh; min-height: 180px; margin-top: 110px; }
+            .page-header h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar" id="navbar">
+    <div class="logo-box"><i class="bi bi-gem logo-icon"></i><span class="logo-text">HotelSuite</span></div>
+    <div style="display: flex; align-items: center;">
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="suites.html" class="active">Suites</a>
+            <a href="services.html">Services</a>
+            <a href="experiences.html">Experiences</a>
+            <a href="testimonials.html">Reviews</a>
+            <a href="contact.html">Contact</a>
+            <a href="support.html">Support</a>
+        </div>
+        <button class="theme-switch" id="themeToggleBtn"><i class="bi bi-brightness-high-fill"></i></button>
+    </div>
+</div>
+
+<div class="page-header"><div><h1>Our Signature Suites</h1><p>Each residence is a masterpiece of design and comfort</p></div></div>
+
+<div class="section">
+    <div class="rooms-full-grid" id="allRoomsGrid"></div>
+    <div style="text-align: center; margin-top: 2rem;"><a href="register.html" class="btn-primary"><i class="bi bi-gem"></i> Member Exclusive Rates</a></div>
+</div>
+
+<footer><p>© 2025 HotelSuite – The Epitome of Luxury Hospitality</p></footer>
+<div class="floating-cta" onclick="location.href='register.html'"><i class="bi bi-calendar-check"></i></div>
+
+<script>
+    function setTheme(theme) {
+        if (theme === 'dark') { document.body.classList.add('dark'); localStorage.setItem('hotel_theme', 'dark'); const icon = document.querySelector('#themeToggleBtn i'); if(icon) icon.className = 'bi bi-moon-stars-fill';
+        } else { document.body.classList.remove('dark'); localStorage.setItem('hotel_theme', 'light'); const icon = document.querySelector('#themeToggleBtn i'); if(icon) icon.className = 'bi bi-brightness-high-fill'; }
+    }
+    if (localStorage.getItem('hotel_theme') === 'dark') setTheme('dark'); else setTheme('light');
+    document.getElementById('themeToggleBtn')?.addEventListener('click', () => { setTheme(document.body.classList.contains('dark') ? 'light' : 'dark'); });
+
+    const ALL_SUITES = [
+        { name: "Presidential Sky Villa", size: "250 sqm", beds: "King + 2 Twins", view: "360° Ocean", price: 1890, image: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg" },
+        { name: "Ocean Grand Suite", size: "180 sqm", beds: "King", view: "Panoramic Sea", price: 1090, image: "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg" },
+        { name: "Heritage Royal Chamber", size: "140 sqm", beds: "King", view: "Garden & Pool", price: 790, image: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg" },
+        { name: "Azure Penthouse", size: "320 sqm", beds: "2 Kings", view: "Full Horizon", price: 2490, image: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg" },
+        { name: "Sunset Lagoon Suite", size: "160 sqm", beds: "King", view: "Sunset Terrace", price: 990, image: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg" },
+        { name: "Diplomat Executive", size: "120 sqm", beds: "Queen", view: "City Skyline", price: 650, image: "https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg" }
+    ];
+    const container = document.getElementById('allRoomsGrid');
+    if(container) {
+        ALL_SUITES.forEach(suite => { container.innerHTML += `<div class="room-card"><img src="${suite.image}?auto=compress&cs=tinysrgb&w=800" alt="${suite.name}"><div class="room-info"><h3>${suite.name}</h3><div class="amenities-list"><span class="amenity-badge"><i class="bi bi-aspect-ratio"></i> ${suite.size}</span><span class="amenity-badge"><i class="bi bi-bed"></i> ${suite.beds}</span><span class="amenity-badge"><i class="bi bi-eye"></i> ${suite.view}</span></div><div class="room-price">$${suite.price}<span style="font-size:0.8rem;"> / night</span></div><a href="register.html" class="btn-primary" style="padding:0.5rem 1.2rem; font-size:0.85rem;">Book Now</a></div></div>`; });
+    }
+</script>
+</body>
+</html>

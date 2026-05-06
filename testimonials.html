@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HotelSuite | Guest Testimonials</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --deep-teal: #0f2b36; --ocean: #1c6e8f; --azure: #2b9bbf; --gold: #e4b363;
+            --bg-primary: #f8fafc; --bg-secondary: #ffffff; --bg-glass: rgba(255,255,255,0.7);
+            --text-primary: #1e293b; --text-secondary: #475569; --text-light: #64748b;
+            --border-light: rgba(0,0,0,0.06); --card-shadow: 0 20px 35px -12px rgba(0,0,0,0.08);
+            --transition-smooth: all 0.4s ease; --transition-fast: all 0.2s ease;
+            --nav-link-color: #1e293b;
+        }
+        body.dark { --bg-primary: #0f172a; --bg-secondary: #1e293b; --bg-glass: rgba(30,41,59,0.85); --text-primary: #f1f5f9; --text-secondary: #cbd5e1; --text-light: #94a3b8; --border-light: rgba(255,255,255,0.08); --nav-link-color: #f1f5f9; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-primary); color: var(--text-primary); transition: all 0.3s ease; }
+        h1, h2, h3, .logo-text { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+        .navbar { position: fixed; top: 0; left: 0; width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; z-index: 1000; background: var(--bg-glass); backdrop-filter: blur(20px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+        .logo-box { display: flex; align-items: center; gap: 0.6rem; }
+        .logo-icon { font-size: 1.8rem; background: linear-gradient(135deg, var(--azure), var(--ocean)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo-text { font-size: 1.5rem; background: linear-gradient(120deg, var(--ocean), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .nav-links { display: flex; gap: 1.8rem; align-items: center; flex-wrap: wrap; }
+        .nav-links a { text-decoration: none; font-weight: 600; color: var(--nav-link-color); transition: var(--transition-fast); font-size: 0.9rem; position: relative; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0%; height: 2px; background: linear-gradient(90deg, var(--gold), var(--azure)); transition: width 0.3s ease; }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-links a:hover { color: var(--gold); }
+        .theme-switch { background: var(--bg-secondary); border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; color: var(--nav-link-color); font-size: 1.1rem; margin-left: 1rem; transition: var(--transition-fast); }
+        .theme-switch:hover { transform: scale(1.1) rotate(15deg); }
+
+        .page-header { height: 30vh; min-height: 220px; background: linear-gradient(135deg, var(--ocean), var(--deep-teal)); display: flex; align-items: center; justify-content: center; text-align: center; color: white; margin-top: 70px; }
+        .page-header h1 { font-size: 2.2rem; margin-bottom: 0.3rem; }
+        .page-header p { font-size: 0.9rem; opacity: 0.9; }
+
+        .section { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+        .testimonial-card { background: var(--bg-secondary); border-radius: 24px; padding: 2rem; text-align: center; box-shadow: var(--card-shadow); transition: var(--transition-smooth); border: 1px solid var(--border-light); }
+        .testimonial-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+        .stars { color: var(--gold); font-size: 1.2rem; margin: 1rem 0; }
+        .testimonial-card p { color: var(--text-secondary); font-style: italic; font-size: 0.9rem; }
+        .testimonial-card h4 { margin-top: 1rem; color: var(--text-primary); }
+        .testimonial-card small { color: var(--text-light); }
+        .btn-primary { background: linear-gradient(105deg, var(--azure), var(--ocean)); color: white; padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 600; display: inline-block; transition: var(--transition-fast); }
+        .btn-primary:hover { transform: translateY(-3px); }
+
+        .floating-cta { position: fixed; bottom: 25px; right: 25px; background: linear-gradient(145deg, var(--azure), var(--ocean)); width: 52px; height: 52px; border-radius: 26px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.25); z-index: 99; color: white; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+        .floating-cta:hover { transform: scale(1.1) rotate(5deg); }
+        footer { text-align: center; padding: 1.5rem; border-top: 1px solid var(--border-light); font-size: 0.8rem; color: var(--text-light); }
+
+        @media (max-width: 900px) {
+            .navbar { padding: 0.8rem; flex-direction: column; gap: 10px; }
+            .nav-links { gap: 0.8rem; justify-content: center; }
+            .section { padding: 2rem 1rem; }
+            .page-header { height: 25vh; min-height: 180px; margin-top: 110px; }
+            .page-header h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar" id="navbar">
+    <div class="logo-box"><i class="bi bi-gem logo-icon"></i><span class="logo-text">HotelSuite</span></div>
+    <div style="display: flex; align-items: center;">
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="suites.html">Suites</a>
+            <a href="services.html">Services</a>
+            <a href="experiences.html">Experiences</a>
+            <a href="testimonials.html" class="active">Reviews</a>
+            <a href="contact.html">Contact</a>
+            <a href="support.html">Support</a>
+        </div>
+        <button class="theme-switch" id="themeToggleBtn"><i class="bi bi-brightness-high-fill"></i></button>
+    </div>
+</div>
+
+<div class="page-header"><div><h1>Guest Stories</h1><p>Over 2,000 five-star experiences</p></div></div>
+
+<div class="section">
+    <div class="testimonials-grid" id="allTestimonials"></div>
+    <div style="text-align: center; margin-top: 2rem;"><a href="register.html" class="btn-primary">Share Your Experience</a></div>
+</div>
+
+<footer><p>© 2025 HotelSuite – The Epitome of Luxury Hospitality</p></footer>
+<div class="floating-cta" onclick="location.href='register.html'"><i class="bi bi-calendar-check"></i></div>
+
+<script>
+    function setTheme(t) { if(t==='dark'){ document.body.classList.add('dark'); localStorage.setItem('hotel_theme','dark'); const i=document.querySelector('#themeToggleBtn i'); if(i)i.className='bi bi-moon-stars-fill'; } else { document.body.classList.remove('dark'); localStorage.setItem('hotel_theme','light'); const i=document.querySelector('#themeToggleBtn i'); if(i)i.className='bi bi-brightness-high-fill'; } }
+    if(localStorage.getItem('hotel_theme')==='dark') setTheme('dark'); else setTheme('light');
+    document.getElementById('themeToggleBtn')?.addEventListener('click',()=>{ setTheme(document.body.classList.contains('dark')?'light':'dark'); });
+
+    const REVIEWS_LIST = [
+        { name: "Aditya Khanna", rating: 5, comment: "Flawless service, breathtaking views. The butler anticipated every need.", location: "Mumbai" },
+        { name: "Sophia Laurent", rating: 5, comment: "A masterpiece of hospitality. Every corner whispers elegance.", location: "Paris" },
+        { name: "Rohan Mehta", rating: 4, comment: "World-class infinity pool and exquisite dining.", location: "Delhi" },
+        { name: "Olivia Chen", rating: 5, comment: "The most romantic sunset I've ever witnessed.", location: "Singapore" },
+        { name: "William Hayes", rating: 5, comment: "Presidential suite exceeded expectations.", location: "London" },
+        { name: "Priya Sharma", rating: 4, comment: "Amazing spa and food.", location: "Bangalore" }
+    ];
+    const container = document.getElementById('allTestimonials');
+    if(container) {
+        REVIEWS_LIST.forEach(r => { const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        container.innerHTML += `<div class="testimonial-card"><i class="bi bi-chat-quote-fill" style="font-size:2rem; color:var(--azure);"></i><div class="stars">${stars}</div><p>"${r.comment}"</p><h4>— ${r.name}</h4><small>${r.location}</small></div>`; });
+    }
+</script>
+</body>
+</html>
