@@ -1,3 +1,9 @@
+const fs = require('fs');
+// Ensure database directory exists
+const dbDir = '/opt/render/project/src/data';
+if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+}
 const express = require("express");
 const session = require("express-session");
 const bcrypt = require('bcrypt');
@@ -20,8 +26,8 @@ app.use(session({
 }));
 
 // ==================== DATABASE ====================
-const db = new sqlite3.Database('./hotel.db');
-
+const dbPath = process.env.NODE_ENV === 'production' ? '/opt/render/project/src/data/hotel.db' : './hotel.db';
+const db = new sqlite3.Database(dbPath);
 db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
