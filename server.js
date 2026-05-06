@@ -11,7 +11,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 4000 
+const port = process.env.PORT || 10000 
 const saltRounds = 10;
 
 // ==================== MIDDLEWARE ====================
