@@ -10,6 +10,7 @@ const saltRounds = 10;
 
 // Middleware
 app.use(express.json());
+app.use(express.static(__dirname));
 app.use(express.static(__dirname + "/public"));
 
 app.use(session({
@@ -373,7 +374,10 @@ app.get("/contact.html", (req, res) => {
 app.get("/support.html", (req, res) => {
     res.sendFile(__dirname + "/support.html");
 });
-
+// Serve home page at root
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/home.html");
+});
 // ==================== START SERVER ====================
 app.listen(PORT, () => {
     console.log(`✅ Server running on http://localhost:${PORT}`);
